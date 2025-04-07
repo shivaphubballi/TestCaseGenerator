@@ -13,86 +13,71 @@ import java.util.List;
 public interface AIService {
     
     /**
-     * Enhances test cases for web UI testing by suggesting additional test scenarios,
-     * edge cases, and validation steps based on the identified web elements.
-     * 
-     * @param elements The web elements identified on the page
-     * @param baseTestCases Initial test cases created from basic analysis
-     * @return Enhanced list of test cases with improved coverage
+     * Enhances test cases for a web page based on analysis of elements.
+     *
+     * @param elements The web elements on the page
+     * @param baseTestCases The base test cases to enhance
+     * @return Enhanced test cases
      */
     List<TestCase> enhanceWebTestCases(List<WebElement> elements, List<TestCase> baseTestCases);
     
     /**
-     * Enhances test cases for API testing by suggesting additional test scenarios,
-     * parameter variations, and validation steps based on the identified endpoints.
-     * 
-     * @param endpoints The API endpoints identified from the Postman collection
-     * @param baseTestCases Initial test cases created from basic analysis
-     * @return Enhanced list of test cases with improved coverage
+     * Enhances a single test case with additional steps or assertions.
+     *
+     * @param testCase The test case to enhance
+     * @return The enhanced test case
      */
-    List<TestCase> enhanceApiTestCases(List<ApiEndpoint> endpoints, List<TestCase> baseTestCases);
+    default TestCase enhanceTestCase(TestCase testCase) {
+        // Default implementation simply returns the original test case
+        return testCase;
+    }
     
     /**
-     * Generates potential edge cases for a specific web element.
-     * 
-     * @param element The web element to analyze
-     * @return A list of test cases focusing on edge cases for the element
+     * Generates security-focused test cases based on existing test cases.
+     *
+     * @param baseTestCases The base test cases to analyze
+     * @param url The URL of the web page (for additional context)
+     * @return Security-focused test cases
      */
-    List<TestCase> generateWebElementEdgeCases(WebElement element);
+    default List<TestCase> generateSecurityTestCases(List<TestCase> baseTestCases, String url) {
+        // Default implementation can be empty or provide basic security tests
+        return List.of();
+    }
     
     /**
-     * Generates potential edge cases for a specific API endpoint.
-     * 
-     * @param endpoint The API endpoint to analyze
-     * @return A list of test cases focusing on edge cases for the endpoint
+     * Generates accessibility-focused test cases based on existing test cases.
+     *
+     * @param baseTestCases The base test cases to analyze
+     * @param url The URL of the web page (for additional context)
+     * @return Accessibility-focused test cases
      */
-    List<TestCase> generateApiEndpointEdgeCases(ApiEndpoint endpoint);
+    default List<TestCase> generateAccessibilityTestCases(List<TestCase> baseTestCases, String url) {
+        // Default implementation can be empty or provide basic accessibility tests
+        return List.of();
+    }
     
     /**
-     * Suggests security test cases for web UI.
-     * 
-     * @param elements The web elements identified on the page
-     * @return A list of security-focused test cases
+     * Generates performance-focused test cases based on existing test cases.
+     *
+     * @param baseTestCases The base test cases to analyze
+     * @param url The URL of the web page (for additional context)
+     * @return Performance-focused test cases
      */
-    List<TestCase> suggestWebSecurityTests(List<WebElement> elements);
+    default List<TestCase> generatePerformanceTestCases(List<TestCase> baseTestCases, String url) {
+        // Default implementation can be empty or provide basic performance tests
+        return List.of();
+    }
     
     /**
-     * Suggests security test cases for API endpoints.
-     * 
-     * @param endpoints The API endpoints identified from the Postman collection
-     * @return A list of security-focused test cases
+     * Generates test cases for a Single Page Application (SPA).
+     *
+     * @param elements The web elements on the page
+     * @param baseTestCases The base test cases to enhance
+     * @param url The URL of the SPA (for additional context)
+     * @return SPA-focused test cases
      */
-    List<TestCase> suggestApiSecurityTests(List<ApiEndpoint> endpoints);
-    
-    /**
-     * Suggests accessibility test cases for web UI.
-     * 
-     * @param elements The web elements identified on the page
-     * @return A list of accessibility-focused test cases
-     */
-    List<TestCase> suggestAccessibilityTests(List<WebElement> elements);
-    
-    /**
-     * Suggests performance test cases for web UI.
-     * 
-     * @param elements The web elements identified on the page
-     * @return A list of performance-focused test cases
-     */
-    List<TestCase> suggestPerformanceTests(List<WebElement> elements);
-    
-    /**
-     * Suggests performance test cases for API endpoints.
-     * 
-     * @param endpoints The API endpoints identified from the Postman collection
-     * @return A list of performance-focused test cases
-     */
-    List<TestCase> suggestApiPerformanceTests(List<ApiEndpoint> endpoints);
-    
-    /**
-     * Analyzes existing test coverage and suggests improvements.
-     * 
-     * @param existingTests The existing test cases
-     * @return Suggestions for improving test coverage
-     */
-    String analyzeCoverageGaps(List<TestCase> existingTests);
+    default List<TestCase> generateSPATestCases(List<WebElement> elements, List<TestCase> baseTestCases, String url) {
+        // Default implementation uses the standard enhanceWebTestCases method
+        return enhanceWebTestCases(elements, baseTestCases);
+    }
 }

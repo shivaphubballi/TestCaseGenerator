@@ -1,4 +1,2 @@
 #!/bin/bash
-
-# Helper script to run TestGen CLI
-java -jar testgen-cli.jar "$@"
+java -cp bin:lib/* com.testgen.cli.CommandLineRunner "$@"

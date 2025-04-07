@@ -1,205 +1,96 @@
 package com.testgen.generator;
 
 import com.testgen.model.TestCase;
+import com.testgen.model.TestCase.TestStep;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * Generates Jira test cases.
+ * Generates Jira test cases based on test case models.
  */
 public class JiraTestGenerator {
-    /**
-     * Generates Jira test cases for web tests.
-     *
-     * @param testCases The test cases
-     * @param outputDir The directory to save the generated test cases
-     * @throws IOException If an error occurs during generation
-     */
-    public void generateFromWebTestCases(List<TestCase> testCases, String outputDir) throws IOException {
-        generateTestCases(testCases, outputDir, "web");
-    }
-    
-    /**
-     * Generates Jira test cases for API tests.
-     *
-     * @param testCases The test cases
-     * @param outputDir The directory to save the generated test cases
-     * @throws IOException If an error occurs during generation
-     */
-    public void generateFromApiTestCases(List<TestCase> testCases, String outputDir) throws IOException {
-        generateTestCases(testCases, outputDir, "api");
-    }
-    
-    /**
-     * Generates Jira test cases for security tests.
-     *
-     * @param testCases The test cases
-     * @param outputDir The directory to save the generated test cases
-     * @throws IOException If an error occurs during generation
-     */
-    public void generateFromSecurityTestCases(List<TestCase> testCases, String outputDir) throws IOException {
-        // Filter security test cases
-        List<TestCase> securityTests = testCases.stream()
-            .filter(tc -> tc.getType() == TestCase.TestType.SECURITY)
-            .collect(Collectors.toList());
-        
-        generateTestCases(securityTests, outputDir, "security");
-    }
-    
-    /**
-     * Generates Jira test cases for accessibility tests.
-     *
-     * @param testCases The test cases
-     * @param outputDir The directory to save the generated test cases
-     * @throws IOException If an error occurs during generation
-     */
-    public void generateFromAccessibilityTestCases(List<TestCase> testCases, String outputDir) throws IOException {
-        // Filter accessibility test cases
-        List<TestCase> accessibilityTests = testCases.stream()
-            .filter(tc -> tc.getType() == TestCase.TestType.ACCESSIBILITY)
-            .collect(Collectors.toList());
-        
-        generateTestCases(accessibilityTests, outputDir, "accessibility");
-    }
-    
-    /**
-     * Generates Jira test cases for performance tests.
-     *
-     * @param testCases The test cases
-     * @param outputDir The directory to save the generated test cases
-     * @throws IOException If an error occurs during generation
-     */
-    public void generateFromPerformanceTestCases(List<TestCase> testCases, String outputDir) throws IOException {
-        // Filter performance test cases
-        List<TestCase> performanceTests = testCases.stream()
-            .filter(tc -> tc.getType() == TestCase.TestType.PERFORMANCE)
-            .collect(Collectors.toList());
-        
-        generateTestCases(performanceTests, outputDir, "performance");
-    }
     
     /**
      * Generates Jira test cases.
      *
-     * @param testCases The test cases
-     * @param outputDir The directory to save the generated test cases
-     * @param type      The type of test cases (web, api, security, accessibility, performance)
+     * @param testCases The test cases to generate
+     * @param outputDir The output directory
+     * @param projectKey The Jira project key (optional, can be null)
      * @throws IOException If an error occurs during generation
      */
-    private void generateTestCases(List<TestCase> testCases, String outputDir, String type) throws IOException {
+    public void generate(List<TestCase> testCases, String outputDir, String projectKey) throws IOException {
         // Create output directory if it doesn't exist
-        File outputDirFile = new File(outputDir);
-        if (!outputDirFile.exists()) {
-            outputDirFile.mkdirs();
+        Files.createDirectories(Paths.get(outputDir));
+        
+        // Generate a Jira-compatible CSV file
+        String filename = "jira_test_cases.csv";
+        if (projectKey != null && !projectKey.isEmpty()) {
+            filename = projectKey + "_test_cases.csv";
         }
         
-        // Create subdirectory for Jira test cases
-        File jiraDir = new File(outputDirFile, "jira");
-        if (!jiraDir.exists()) {
-            jiraDir.mkdirs();
-        }
+        File outputFile = new File(outputDir, filename);
         
-        // Generate Jira test cases file
-        File outputFile = new File(jiraDir, "jira_" + type + "_test_cases.csv");
-        
-        try (PrintWriter writer = new PrintWriter(new FileWriter(outputFile))) {
+        try (FileWriter writer = new FileWriter(outputFile)) {
             // Write CSV header
-            writer.println("\"Summary\",\"Description\",\"Test Type\",\"Test Steps\",\"Expected Results\"");
-            
-            // Write test cases
-            for (TestCase testCase : testCases) {
-                writer.print("\"" + testCase.getName() + "\",");
-                writer.print("\"" + testCase.getDescription() + "\",");
-                writer.print("\"" + testCase.getType() + "\",");
-                
-                // Write test steps
-                writer.print("\"");
-                for (int i = 0; i < testCase.getSteps().size(); i++) {
-                    TestCase.TestStep step = testCase.getSteps().get(i);
-                    writer.print((i + 1) + ". " + step.getDescription());
-                    if (i < testCase.getSteps().size() - 1) {
-                        writer.print("\\n");
-                    }
-                }
-                writer.print("\",");
-                
-                // Write expected results
-                writer.print("\"");
-                for (int i = 0; i < testCase.getSteps().size(); i++) {
-                    TestCase.TestStep step = testCase.getSteps().get(i);
-                    writer.print((i + 1) + ". " + step.getExpectedResult());
-                    if (i < testCase.getSteps().size() - 1) {
-                        writer.print("\\n");
-                    }
-                }
-                writer.print("\"");
-                
-                writer.println();
-            }
-        }
-        
-        // Generate Jira test cases in Markdown format
-        generateMarkdownTestCases(testCases, jiraDir, type);
-    }
-    
-    /**
-     * Generates Jira test cases in Markdown format.
-     *
-     * @param testCases The test cases
-     * @param outputDir The directory to save the generated test cases
-     * @param type      The type of test cases (web, api, security, accessibility, performance)
-     * @throws IOException If an error occurs during generation
-     */
-    private void generateMarkdownTestCases(List<TestCase> testCases, File outputDir, String type) throws IOException {
-        File outputFile = new File(outputDir, "jira_" + type + "_test_cases.md");
-        
-        try (PrintWriter writer = new PrintWriter(new FileWriter(outputFile))) {
-            // Write header
-            writer.println("# " + capitalize(type) + " Test Cases");
-            writer.println();
+            writer.write("Summary,Description,Test Type,Steps,Expected Results\n");
             
             // Write each test case
-            for (int i = 0; i < testCases.size(); i++) {
-                TestCase testCase = testCases.get(i);
+            for (TestCase testCase : testCases) {
+                // Escape double quotes and commas in fields
+                String summary = escape(testCase.getName());
+                String description = escape(testCase.getDescription());
+                String testType = escape(testCase.getType().toString());
                 
-                writer.println("## Test Case " + (i + 1) + ": " + testCase.getName());
-                writer.println();
-                writer.println("**Description:** " + testCase.getDescription());
-                writer.println();
-                writer.println("**Test Type:** " + testCase.getType());
-                writer.println();
+                // Build steps and expected results as numbered lists
+                StringBuilder steps = new StringBuilder();
+                StringBuilder expectedResults = new StringBuilder();
                 
-                // Write test steps and expected results in a table
-                writer.println("| Step | Description | Expected Result |");
-                writer.println("|------|-------------|-----------------|");
-                
-                for (int j = 0; j < testCase.getSteps().size(); j++) {
-                    TestCase.TestStep step = testCase.getSteps().get(j);
-                    writer.println("| " + (j + 1) + " | " + step.getDescription() + " | " + step.getExpectedResult() + " |");
+                int stepNumber = 1;
+                for (TestStep step : testCase.getSteps()) {
+                    if (stepNumber > 1) {
+                        steps.append("\\n");
+                        expectedResults.append("\\n");
+                    }
+                    
+                    steps.append(stepNumber).append(". ").append(escape(step.getDescription()));
+                    expectedResults.append(stepNumber).append(". ").append(escape(step.getExpectedResult()));
+                    
+                    stepNumber++;
                 }
                 
-                writer.println();
-                writer.println("---");
-                writer.println();
+                // Write the CSV row
+                writer.write(String.format("%s,%s,%s,%s,%s\n", 
+                        summary, description, testType, steps.toString(), expectedResults.toString()));
             }
         }
+        
+        System.out.println("Generated Jira test cases in " + outputFile.getAbsolutePath());
     }
     
     /**
-     * Capitalizes the first letter of a string.
+     * Escapes special characters in CSV fields.
      *
-     * @param str The string to capitalize
-     * @return The capitalized string
+     * @param field The field to escape
+     * @return The escaped field
      */
-    private String capitalize(String str) {
-        if (str == null || str.isEmpty()) {
-            return str;
+    private String escape(String field) {
+        if (field == null) {
+            return "";
         }
-        return Character.toUpperCase(str.charAt(0)) + str.substring(1);
+        
+        // Escape double quotes by doubling them
+        String escaped = field.replace("\"", "\"\"");
+        
+        // If the field contains commas, quotes, or newlines, enclose it in double quotes
+        if (escaped.contains(",") || escaped.contains("\"") || escaped.contains("\n")) {
+            escaped = "\"" + escaped + "\"";
+        }
+        
+        return escaped;
     }
 }

@@ -5,6 +5,8 @@ import com.testgen.model.DynamicEvent;
 import com.testgen.model.AjaxCall;
 import com.testgen.model.RouteChange;
 import com.testgen.exception.TestGenException;
+import com.testgen.model.TestCase;
+import com.testgen.model.TestCase.TestStep;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -368,6 +370,131 @@ public class SPAAnalyzer {
         }
         
         return events;
+    }
+    
+    /**
+     * Generates SPA-specific test cases for a list of web elements and dynamic events.
+     *
+     * @param elements The web elements
+     * @param routes The detected routes
+     * @param ajaxCalls The detected AJAX calls
+     * @param dynamicEvents The detected dynamic events
+     * @param pageName The name of the page
+     * @return A list of test cases
+     */
+    public List<TestCase> generateSPATestCases(
+            List<WebElement> elements, 
+            List<RouteChange> routes,
+            List<AjaxCall> ajaxCalls,
+            List<DynamicEvent> dynamicEvents,
+            String pageName) {
+        
+        List<TestCase> testCases = new ArrayList<>();
+        
+        // Generate route navigation tests
+        TestCase routeTest = new TestCase(
+                pageName + " - Route Navigation Test",
+                "Test navigation between different routes in the " + pageName + " SPA",
+                TestCase.TestType.WEB_UI
+        );
+        
+        routeTest.addStep(new TestStep(
+                "Navigate to " + pageName,
+                "The " + pageName + " page should load successfully with the home route active"
+        ));
+        
+        for (RouteChange route : routes) {
+            routeTest.addStep(new TestStep(
+                    "Click on the " + route.getRouteName() + " navigation link",
+                    "URL should change to " + route.getClientPath() + " and corresponding content should be displayed"
+            ));
+        }
+        
+        testCases.add(routeTest);
+        
+        // Generate AJAX loading tests
+        TestCase ajaxTest = new TestCase(
+                pageName + " - AJAX Loading Test",
+                "Test dynamic content loading via AJAX in the " + pageName + " SPA",
+                TestCase.TestType.WEB_UI
+        );
+        
+        ajaxTest.addStep(new TestStep(
+                "Navigate to " + pageName,
+                "The " + pageName + " page should load successfully"
+        ));
+        
+        for (AjaxCall ajaxCall : ajaxCalls) {
+            ajaxTest.addStep(new TestStep(
+                    "Trigger AJAX call with " + ajaxCall.getTrigger(),
+                    "The request to " + ajaxCall.getUrl() + " should complete successfully and update the UI"
+            ));
+        }
+        
+        testCases.add(ajaxTest);
+        
+        // Generate dynamic UI interaction tests
+        TestCase dynamicUiTest = new TestCase(
+                pageName + " - Dynamic UI Interaction Test",
+                "Test dynamic UI elements and interactions in the " + pageName + " SPA",
+                TestCase.TestType.WEB_UI
+        );
+        
+        dynamicUiTest.addStep(new TestStep(
+                "Navigate to " + pageName,
+                "The " + pageName + " page should load successfully"
+        ));
+        
+        for (DynamicEvent event : dynamicEvents) {
+            dynamicUiTest.addStep(new TestStep(
+                    "Trigger the " + event.getEventType() + " event by " + event.getEventName() + " on " + event.getTriggerSelector(),
+                    "The target element " + event.getTargetSelector() + " should change from " + 
+                            event.getInitialState() + " to " + event.getFinalState()
+            ));
+        }
+        
+        testCases.add(dynamicUiTest);
+        
+        // Generate form submission test if contact form is present
+        boolean hasContactForm = elements.stream()
+                .anyMatch(e -> e.getId() != null && e.getId().equals("contact-form"));
+        
+        if (hasContactForm) {
+            TestCase formTest = new TestCase(
+                    pageName + " - Form Submission Test",
+                    "Test form submission in the " + pageName + " SPA",
+                    TestCase.TestType.WEB_UI
+            );
+            
+            formTest.addStep(new TestStep(
+                    "Navigate to " + pageName + " contact page",
+                    "The contact form should be displayed"
+            ));
+            
+            formTest.addStep(new TestStep(
+                    "Fill in the name field",
+                    "Text should be entered in the field"
+            ));
+            
+            formTest.addStep(new TestStep(
+                    "Fill in the email field",
+                    "Text should be entered in the field"
+            ));
+            
+            formTest.addStep(new TestStep(
+                    "Fill in the message field",
+                    "Text should be entered in the field"
+            ));
+            
+            formTest.addStep(new TestStep(
+                    "Click the submit button",
+                    "Form should be submitted via AJAX and success message should be displayed"
+            ));
+            
+            testCases.add(formTest);
+        }
+        
+        return testCases;
     }
     
     /**
