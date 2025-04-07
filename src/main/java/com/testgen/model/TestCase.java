@@ -1,278 +1,209 @@
 package com.testgen.model;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Represents a test case that can be exported to various formats (Selenium, REST Assured, Jira).
+ * Represents a test case in the TestGen library.
+ * A test case consists of a name, description, and a list of test steps.
  */
 public class TestCase {
-    private String id;
-    private String name;
-    private String summary;
-    private String description;
-    private TestType type;
-    private String sourceUrl;
-    private List<TestStep> steps;
-    private Map<String, String> metadata;
-    private String preconditions;
-    private List<String> tags;
-    
     /**
-     * Test case types.
+     * Enum representing the type of test case.
      */
     public enum TestType {
         WEB_UI,
         API,
-        BOTH
+        SECURITY,
+        ACCESSIBILITY,
+        PERFORMANCE
     }
-    
+
     /**
-     * Represents a single test step.
+     * Represents a step in a test case.
      */
     public static class TestStep {
-        private int stepNumber;
-        private String action;
+        private String description;
         private String expectedResult;
-        private Map<String, String> testData;
-        
-        public TestStep() {
-            this.testData = new LinkedHashMap<>();
-        }
-        
-        public TestStep(int stepNumber, String action, String expectedResult) {
-            this();
-            this.stepNumber = stepNumber;
-            this.action = action;
+
+        /**
+         * Creates a new test step.
+         *
+         * @param description    The description of the step
+         * @param expectedResult The expected result of the step
+         */
+        public TestStep(String description, String expectedResult) {
+            this.description = description;
             this.expectedResult = expectedResult;
         }
-        
-        public int getStepNumber() {
-            return stepNumber;
+
+        /**
+         * Gets the description of the step.
+         *
+         * @return The description
+         */
+        public String getDescription() {
+            return description;
         }
-        
-        public void setStepNumber(int stepNumber) {
-            this.stepNumber = stepNumber;
+
+        /**
+         * Sets the description of the step.
+         *
+         * @param description The description
+         */
+        public void setDescription(String description) {
+            this.description = description;
         }
-        
-        public String getAction() {
-            return action;
-        }
-        
-        public void setAction(String action) {
-            this.action = action;
-        }
-        
+
+        /**
+         * Gets the expected result of the step.
+         *
+         * @return The expected result
+         */
         public String getExpectedResult() {
             return expectedResult;
         }
-        
+
+        /**
+         * Sets the expected result of the step.
+         *
+         * @param expectedResult The expected result
+         */
         public void setExpectedResult(String expectedResult) {
             this.expectedResult = expectedResult;
         }
-        
-        public Map<String, String> getTestData() {
-            return testData;
-        }
-        
-        public void setTestData(Map<String, String> testData) {
-            this.testData = testData;
-        }
-        
-        public void addTestData(String key, String value) {
-            this.testData.put(key, value);
+
+        @Override
+        public String toString() {
+            return "TestStep{" +
+                    "description='" + description + '\'' +
+                    ", expectedResult='" + expectedResult + '\'' +
+                    '}';
         }
     }
-    
-    public TestCase() {
+
+    private String name;
+    private String description;
+    private List<TestStep> steps;
+    private TestType type;
+
+    /**
+     * Creates a new test case.
+     *
+     * @param name        The name of the test case
+     * @param description The description of the test case
+     * @param type        The type of the test case
+     */
+    /**
+     * Creates a new test case with predefined steps.
+     *
+     * @param name        The name of the test case
+     * @param description The description of the test case
+     * @param steps       The steps of the test case
+     * @param type        The type of the test case
+     */
+    public TestCase(String name, String description, List<TestStep> steps, TestType type) {
+        this.name = name;
+        this.description = description;
+        this.steps = steps;
+        this.type = type;
+    }
+
+    public TestCase(String name, String description, TestType type) {
+        this.name = name;
+        this.description = description;
         this.steps = new ArrayList<>();
-        this.metadata = new LinkedHashMap<>();
-        this.tags = new ArrayList<>();
+        this.type = type;
     }
-    
-    public String getId() {
-        return id;
-    }
-    
-    public void setId(String id) {
-        this.id = id;
-    }
-    
+
+    /**
+     * Gets the name of the test case.
+     *
+     * @return The name
+     */
     public String getName() {
         return name;
     }
-    
+
+    /**
+     * Sets the name of the test case.
+     *
+     * @param name The name
+     */
     public void setName(String name) {
         this.name = name;
     }
-    
-    public String getSummary() {
-        return summary;
-    }
-    
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
-    
+
+    /**
+     * Gets the description of the test case.
+     *
+     * @return The description
+     */
     public String getDescription() {
         return description;
     }
-    
+
+    /**
+     * Sets the description of the test case.
+     *
+     * @param description The description
+     */
     public void setDescription(String description) {
         this.description = description;
     }
-    
-    public TestType getType() {
-        return type;
-    }
-    
-    public void setType(TestType type) {
-        this.type = type;
-    }
-    
-    public String getSourceUrl() {
-        return sourceUrl;
-    }
-    
-    public void setSourceUrl(String sourceUrl) {
-        this.sourceUrl = sourceUrl;
-    }
-    
+
+    /**
+     * Gets the steps of the test case.
+     *
+     * @return The steps
+     */
     public List<TestStep> getSteps() {
         return steps;
     }
-    
+
+    /**
+     * Sets the steps of the test case.
+     *
+     * @param steps The steps
+     */
     public void setSteps(List<TestStep> steps) {
         this.steps = steps;
     }
-    
+
+    /**
+     * Adds a step to the test case.
+     *
+     * @param step The step to add
+     */
     public void addStep(TestStep step) {
-        // Set step number if not already set
-        if (step.getStepNumber() <= 0) {
-            step.setStepNumber(steps.size() + 1);
-        }
         this.steps.add(step);
     }
-    
-    public void addStep(String action, String expectedResult) {
-        TestStep step = new TestStep(steps.size() + 1, action, expectedResult);
-        this.steps.add(step);
-    }
-    
-    public Map<String, String> getMetadata() {
-        return metadata;
-    }
-    
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-    }
-    
-    public void addMetadata(String key, String value) {
-        this.metadata.put(key, value);
-    }
-    
-    public String getPreconditions() {
-        return preconditions;
-    }
-    
-    public void setPreconditions(String preconditions) {
-        this.preconditions = preconditions;
-    }
-    
-    public List<String> getTags() {
-        return tags;
-    }
-    
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
-    
-    public void addTag(String tag) {
-        if (this.tags == null) {
-            this.tags = new ArrayList<>();
-        }
-        this.tags.add(tag);
-    }
-    
+
     /**
-     * Formats the test case as a Jira-compatible string.
+     * Gets the type of the test case.
      *
-     * @return Jira-formatted test case
+     * @return The type
      */
-    public String toJiraFormat() {
-        StringBuilder sb = new StringBuilder();
-        
-        // Summary
-        sb.append("h1. ").append(name).append("\n\n");
-        
-        // Description
-        if (description != null && !description.isEmpty()) {
-            sb.append("h2. Description\n").append(description).append("\n\n");
-        }
-        
-        // Preconditions
-        if (preconditions != null && !preconditions.isEmpty()) {
-            sb.append("h2. Preconditions\n").append(preconditions).append("\n\n");
-        }
-        
-        // Test Steps
-        sb.append("h2. Test Steps\n");
-        sb.append("||Step||Action||Expected Result||\n");
-        
-        for (TestStep step : steps) {
-            sb.append("|").append(step.getStepNumber()).append("|")
-              .append(step.getAction()).append("|")
-              .append(step.getExpectedResult()).append("|\n");
-        }
-        
-        // Metadata
-        if (!metadata.isEmpty()) {
-            sb.append("\nh2. Metadata\n");
-            for (Map.Entry<String, String> entry : metadata.entrySet()) {
-                sb.append("* ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
-            }
-        }
-        
-        // Tags
-        if (!tags.isEmpty()) {
-            sb.append("\nh2. Tags\n");
-            for (String tag : tags) {
-                sb.append("* ").append(tag).append("\n");
-            }
-        }
-        
-        return sb.toString();
+    public TestType getType() {
+        return type;
     }
-    
+
     /**
-     * Create a Java method name from the test case name.
+     * Sets the type of the test case.
      *
-     * @return A valid Java method name
+     * @param type The type
      */
-    public String toMethodName() {
-        // Convert test case name to a valid Java method name
-        String methodName = name.toLowerCase()
-                .replaceAll("[^a-zA-Z0-9]", "_") // Replace non-alphanumeric with underscore
-                .replaceAll("_+", "_")           // Replace multiple underscores with a single one
-                .replaceAll("^_|_$", "");        // Remove leading/trailing underscores
-        
-        // If the result is empty or starts with a digit, prepend with "test"
-        if (methodName.isEmpty() || Character.isDigit(methodName.charAt(0))) {
-            methodName = "test_" + methodName;
-        }
-        
-        return methodName;
+    public void setType(TestType type) {
+        this.type = type;
     }
-    
+
     @Override
     public String toString() {
         return "TestCase{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", steps=" + steps +
                 ", type=" + type +
-                ", steps=" + steps.size() +
                 '}';
     }
 }

@@ -1,44 +1,25 @@
 package com.testgen.exception;
 
 /**
- * Exception thrown by TestGen library components.
+ * Exception thrown by the TestGen library when an error occurs.
  */
-public class TestGenException extends Exception {
-    
-    private static final long serialVersionUID = 1L;
-    
+public class TestGenException extends RuntimeException {
     /**
-     * Constructs a new TestGenException with null as its detail message.
-     */
-    public TestGenException() {
-        super();
-    }
-    
-    /**
-     * Constructs a new TestGenException with the specified detail message.
+     * Creates a new TestGenException with the specified message.
      *
-     * @param message The detail message
+     * @param message The error message
      */
     public TestGenException(String message) {
         super(message);
     }
-    
+
     /**
-     * Constructs a new TestGenException with the specified detail message and cause.
+     * Creates a new TestGenException with the specified message and cause.
      *
-     * @param message The detail message
-     * @param cause The cause
+     * @param message The error message
+     * @param cause   The cause of the exception
      */
     public TestGenException(String message, Throwable cause) {
         super(message, cause);
-    }
-    
-    /**
-     * Constructs a new TestGenException with the specified cause.
-     *
-     * @param cause The cause
-     */
-    public TestGenException(Throwable cause) {
-        super(cause);
     }
 }

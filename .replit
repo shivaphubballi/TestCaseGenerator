@@ -31,8 +31,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "javac -d bin -cp src src/main/java/com/testgen/cli/CommandLineRunner.java && java -cp bin com.testgen.cli.CommandLineRunner help"
-waitForPort = 5000
+args = "javac -d bin -cp bin src/main/java/com/testgen/Main.java && java -cp bin com.testgen.Main"
 
 [[workflows.workflow]]
 name = "testgen_info"
@@ -46,7 +45,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "find src -type f -name \"*.java\" | sort && javac -version && echo \"Checking pom.xml:\" && ls -la pom.xml 2>/dev/null || echo \"No pom.xml found\""
+args = "find src -type f -name \"*.java\" | sort && javac -version && echo \"Listing compiled files:\" && find bin -type f -name \"*.class\" | sort"
 
 [deployment]
-run = ["sh", "-c", "javac -d bin -cp src src/main/java/com/testgen/cli/CommandLineRunner.java && java -cp bin com.testgen.cli.CommandLineRunner help"]
+run = ["sh", "-c", "javac -d bin -cp bin src/main/java/com/testgen/Main.java && java -cp bin com.testgen.Main"]
