@@ -19,6 +19,14 @@ args = "Java TestGen Library"
 task = "workflow.run"
 args = "testgen_info"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "TestGen CLI"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Demo Runner"
+
 [[workflows.workflow]]
 name = "Java TestGen Library"
 author = "agent"
@@ -31,7 +39,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "javac -d bin -cp bin src/main/java/com/testgen/Main.java && java -cp bin com.testgen.Main"
+args = "java -cp bin:lib/* com.testgen.Main"
 
 [[workflows.workflow]]
 name = "testgen_info"
@@ -47,5 +55,33 @@ task = "packager.installForAll"
 task = "shell.exec"
 args = "find src -type f -name \"*.java\" | sort && javac -version && echo \"Listing compiled files:\" && find bin -type f -name \"*.class\" | sort"
 
+[[workflows.workflow]]
+name = "TestGen CLI"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "java -cp bin:lib/* com.testgen.cli.CommandLineRunner help"
+
+[[workflows.workflow]]
+name = "Demo Runner"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "java -cp bin:lib/* com.testgen.DemoRunner"
+
 [deployment]
-run = ["sh", "-c", "javac -d bin -cp bin src/main/java/com/testgen/Main.java && java -cp bin com.testgen.Main"]
+run = ["sh", "-c", "java -cp bin:lib/* com.testgen.Main"]

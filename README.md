@@ -1,137 +1,198 @@
 # TestGen Library
 
-A Java library for automatically generating Selenium, REST Assured, and Jira test cases from web URLs and Postman collections.
-
-## Overview
-
-TestGen is a testing automation utility that helps testers and developers generate comprehensive test cases with minimal effort. It analyzes either web applications or API collections and produces ready-to-use test cases for popular testing frameworks.
+A comprehensive Java library for automatically generating and managing test cases across multiple frameworks including Selenium, REST Assured, and Jira.
 
 ## Features
 
-### Web Analysis
-- Scans web pages to identify interactive elements (forms, buttons, links, etc.)
-- Generates Selenium WebDriver test scripts
-- Creates detailed Jira test cases for manual testing
+- **Automatic Test Case Generation**: Generate test cases from web URLs and Postman collections
+- **Multiple Framework Support**: Generate test code for Selenium (UI) and REST Assured (API)
+- **Jira Integration**: Generate formatted Jira test cases
+- **AI-Enhanced Testing**: Improve test coverage with AI-generated test cases for:
+  - Functional testing
+  - Security testing
+  - Accessibility testing
+  - Performance testing
+- **Command-Line Interface**: Easy-to-use CLI with multiple commands
+- **Test Coverage Analysis**: Analyze and improve test coverage
 
-### API Analysis
-- Parses Postman collections to understand endpoints and request structures
-- Generates REST Assured test scripts
-- Creates detailed Jira test cases for API testing
+## Project Structure
 
-## Getting Started
-
-### Prerequisites
-
-- Java 11 or later
-- Maven 3.6 or later
-
-### Installation
-
-Clone the repository and build the project:
-
-```bash
-git clone https://github.com/yourusername/testgen.git
-cd testgen
-mvn clean install
+```
+src/main/java/com/testgen/
+├── ai                      # AI-related components
+│   ├── AIService.java      # Interface for AI services
+│   ├── AIServiceFactory.java # Factory for creating AI services
+│   └── DefaultAIService.java # Default implementation
+├── cli                     # Command-line interface
+│   └── CommandLineRunner.java # CLI entry point
+├── core                    # Core analyzers
+│   ├── PostmanCollectionAnalyzer.java # Analyzes Postman collections
+│   └── WebAnalyzer.java    # Analyzes web pages
+├── exception               # Custom exceptions
+│   └── TestGenException.java
+├── generator               # Test generators
+│   ├── JiraTestGenerator.java # Generates Jira test cases
+│   ├── RestAssuredTestGenerator.java # Generates REST Assured tests
+│   └── SeleniumTestGenerator.java # Generates Selenium tests
+├── model                   # Data models
+│   ├── ApiEndpoint.java    # Represents an API endpoint
+│   ├── TestCase.java       # Represents a test case
+│   └── WebElement.java     # Represents a web element
+├── util                    # Utility classes
+│   ├── JsonUtil.java       # JSON utilities
+│   └── WebUtil.java        # Web utilities
+├── DemoRunner.java         # Demo showcase
+├── Main.java               # Main entry point
+└── TestGenLibrary.java     # Main library class
 ```
 
-### Usage
+## Usage
 
-You can use TestGen as a command-line tool or integrate it into your Java application.
+### Quick Start
 
-#### Command-Line Usage
+1. Download the JAR files: `testgen.jar` (library) and `testgen-cli.jar` (CLI)
+2. Make sure you have Java 11+ installed
+3. Run the CLI with: `java -jar testgen-cli.jar help`
+
+### Command-Line Interface (CLI)
+
+The library provides a command-line interface for generating tests:
 
 ```bash
+# Using the convenience script
+./testgen help
+./testgen selenium https://example.com output com.example.tests
+./testgen restassured collection.json output com.example.tests
+
+# Or directly with Java
+java -jar testgen-cli.jar selenium https://example.com output com.example.tests
+java -jar testgen-cli.jar restassured collection.json output com.example.tests --ai
+
 # Generate Selenium tests for a web page
-java -jar testgen.jar selenium https://example.com output com.example.tests
+./testgen selenium https://example.com output com.example.tests
+
+# Enable AI enhancement
+./testgen selenium https://example.com output com.example.tests --ai
 
 # Generate REST Assured tests for a Postman collection
-java -jar testgen.jar restassured collection.json output com.example.tests
+./testgen restassured collection.json output com.example.tests
 
 # Generate Jira test cases for a web page
-java -jar testgen.jar jira-web https://example.com output HomePage
+./testgen jira-web https://example.com output HomePage
 
-# Generate Jira test cases for a Postman collection
-java -jar testgen.jar jira-api collection.json output
+# Generate security-focused test cases
+./testgen security-web https://example.com output
+
+# Generate accessibility-focused test cases
+./testgen accessibility https://example.com output
+
+# Analyze test coverage
+./testgen analyze-web https://example.com
 ```
 
-#### Java API Usage
+### Programmatic Usage
 
 ```java
 import com.testgen.TestGenLibrary;
+import com.testgen.model.TestCase;
 
-public class MyApp {
-    public static void main(String[] args) {
-        TestGenLibrary testGen = new TestGenLibrary();
-        
-        // Generate Selenium tests
-        testGen.generateSeleniumTests(
-            "https://example.com", 
-            "output", 
-            "com.example.tests"
-        );
-        
-        // Generate REST Assured tests
-        testGen.generateRestAssuredTests(
-            "collection.json", 
-            "output", 
-            "com.example.tests"
-        );
-        
-        // Generate Jira test cases for a web page
-        testGen.generateJiraTestCasesForWebPage(
-            "https://example.com", 
-            "output", 
-            "HomePage"
-        );
-        
-        // Generate Jira test cases for a Postman collection
-        testGen.generateJiraTestCasesForPostmanCollection(
-            "collection.json", 
-            "output"
-        );
-    }
-}
+// Initialize the library
+TestGenLibrary testGen = new TestGenLibrary();
+
+// Generate Selenium tests
+List<TestCase> seleniumTests = testGen.generateSeleniumTests("https://example.com", "output", "com.example.tests");
+
+// Generate REST Assured tests
+List<TestCase> restAssuredTests = testGen.generateRestAssuredTests("collection.json", "output", "com.example.tests");
+
+// Generate with AI enhancement
+List<TestCase> enhancedTests = testGen.generateEnhancedTests("https://example.com", "output", "com.example.tests");
 ```
 
-## Architecture
+## Supported Test Types
 
-The library follows a modular architecture:
+1. **Web UI Tests (Selenium)**
+   - Page interaction tests
+   - Form submission tests
+   - Navigation tests
 
-1. **Analysis Components**
-   - `WebAnalyzer`: Analyzes web pages and extracts elements
-   - `PostmanCollectionAnalyzer`: Analyzes Postman collections and extracts endpoints
+2. **API Tests (REST Assured)**
+   - Endpoint testing
+   - Request/response validation
+   - Status code verification
 
-2. **Model Classes**
-   - `WebElement`: Represents an element on a web page
-   - `ApiEndpoint`: Represents an API endpoint
-   - `TestCase`: Represents a test case with steps and expected results
+3. **Security Tests**
+   - XSS vulnerability tests
+   - SQL injection tests
+   - Authentication tests
 
-3. **Test Generators**
-   - `SeleniumTestGenerator`: Generates Selenium tests
-   - `RestAssuredTestGenerator`: Generates REST Assured tests
-   - `JiraTestGenerator`: Generates Jira test cases
+4. **Accessibility Tests**
+   - Keyboard navigation tests
+   - Screen reader compatibility tests
+   - WCAG compliance tests
 
-4. **Utility Classes**
-   - `JsonUtil`: Utility methods for JSON operations
-   - `WebUtil`: Utility methods for web operations
+5. **Performance Tests**
+   - Page load time tests
+   - Resource loading tests
+   - Response time tests
 
-## Dependencies
+## Requirements
 
-- JSoup: HTML parsing for web analysis
-- Jackson: JSON parsing for Postman collections
-- Selenium WebDriver: Used in generated Selenium tests
-- REST Assured: Used in generated API tests
-- JUnit: Testing framework
-- Mockito: Mocking framework for tests
+- Java 11 or higher
+- Jackson library (for JSON processing)
+- JSoup library (for HTML parsing)
+
+## Future Development
+
+Planned enhancements for future versions:
+
+1. **Integration with Cloud Testing Platforms**:
+   - Integration with Selenium Grid
+   - Integration with BrowserStack and Sauce Labs
+
+2. **Advanced AI Capabilities**:
+   - Integration with OpenAI for smarter test generation
+   - Learning from test execution results
+
+3. **Expanded Test Types**:
+   - Mobile testing through Appium
+   - Contract testing through Pact
+
+4. **Enhanced Reporting**:
+   - Visual report dashboards
+   - Integration with CI/CD pipelines
+
+5. **Test Data Generation**:
+   - Smart test data generation
+   - Data-driven test support
+
+## Building From Source
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/testgen.git
+cd testgen
+
+# Build the project
+./build_and_run.sh
+
+# Create the JAR files
+mkdir -p META-INF
+echo "Manifest-Version: 1.0
+Main-Class: com.testgen.Main
+Class-Path: lib/jackson-annotations-2.15.2.jar lib/jackson-core-2.15.2.jar lib/jackson-databind-2.15.2.jar lib/jsoup-1.15.4.jar" > META-INF/MANIFEST.MF
+
+cd bin
+jar cfm ../testgen.jar ../META-INF/MANIFEST.MF com
+
+# Create the CLI JAR
+echo "Manifest-Version: 1.0
+Main-Class: com.testgen.cli.CommandLineRunner
+Class-Path: lib/jackson-annotations-2.15.2.jar lib/jackson-core-2.15.2.jar lib/jackson-databind-2.15.2.jar lib/jsoup-1.15.4.jar" > ../META-INF/MANIFEST.MF
+
+jar cfm ../testgen-cli.jar ../META-INF/MANIFEST.MF com
+```
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Roadmap
-
-- Support for generating TestNG tests
-- Support for generating Cucumber feature files
-- Enhanced web element detection with AI
-- Integration with CI/CD pipelines
+MIT License

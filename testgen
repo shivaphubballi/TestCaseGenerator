@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Helper script to run TestGen CLI
+java -jar testgen-cli.jar "$@"

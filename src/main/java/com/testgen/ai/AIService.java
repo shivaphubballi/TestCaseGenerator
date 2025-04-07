@@ -73,6 +73,22 @@ public interface AIService {
     List<TestCase> suggestAccessibilityTests(List<WebElement> elements);
     
     /**
+     * Suggests performance test cases for web UI.
+     * 
+     * @param elements The web elements identified on the page
+     * @return A list of performance-focused test cases
+     */
+    List<TestCase> suggestPerformanceTests(List<WebElement> elements);
+    
+    /**
+     * Suggests performance test cases for API endpoints.
+     * 
+     * @param endpoints The API endpoints identified from the Postman collection
+     * @return A list of performance-focused test cases
+     */
+    List<TestCase> suggestApiPerformanceTests(List<ApiEndpoint> endpoints);
+    
+    /**
      * Analyzes existing test coverage and suggests improvements.
      * 
      * @param existingTests The existing test cases

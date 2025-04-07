@@ -628,4 +628,121 @@ public class DefaultAIService implements AIService {
         }
         return count;
     }
+    @Override
+    public List<TestCase> suggestPerformanceTests(List<WebElement> elements) {
+        List<TestCase> performanceTests = new ArrayList<>();
+        
+        // Page load time test
+        performanceTests.add(createPerformanceTestCase(
+            "Page Load Time Test",
+            "Test page load time",
+            "Measure the time it takes for the page to load completely",
+            "Page should load within acceptable time thresholds"
+        ));
+        
+        // Resource loading test
+        performanceTests.add(createPerformanceTestCase(
+            "Resource Loading Test",
+            "Test loading time for page resources",
+            "Measure loading time for images, CSS, JavaScript, and other resources",
+            "Resources should load within acceptable time thresholds"
+        ));
+        
+        // Form submission performance
+        performanceTests.add(createPerformanceTestCase(
+            "Form Submission Performance Test",
+            "Test performance of form submissions",
+            "Measure the time it takes to submit forms and receive responses",
+            "Form submissions should be processed within acceptable time thresholds"
+        ));
+        
+        // UI responsiveness test
+        performanceTests.add(createPerformanceTestCase(
+            "UI Responsiveness Test",
+            "Test UI responsiveness",
+            "Interact with UI elements and measure response time",
+            "UI should remain responsive during user interactions"
+        ));
+        
+        // Concurrent users test
+        performanceTests.add(createPerformanceTestCase(
+            "Concurrent Users Test",
+            "Test performance under concurrent user load",
+            "Simulate multiple concurrent users interacting with the page",
+            "Page should maintain responsiveness under moderate user load"
+        ));
+        
+        return performanceTests;
+    }
+
+    @Override
+    public List<TestCase> suggestApiPerformanceTests(List<ApiEndpoint> endpoints) {
+        List<TestCase> performanceTests = new ArrayList<>();
+        
+        // Response time test
+        performanceTests.add(createApiPerformanceTestCase(
+            "API Response Time Test",
+            "Test API response time",
+            "Measure the time it takes for the API to respond to requests",
+            "API should respond within acceptable time thresholds"
+        ));
+        
+        // Throughput test
+        performanceTests.add(createApiPerformanceTestCase(
+            "API Throughput Test",
+            "Test API throughput",
+            "Measure the number of requests the API can handle per unit of time",
+            "API should handle a minimum number of requests per second"
+        ));
+        
+        // Concurrent requests test
+        performanceTests.add(createApiPerformanceTestCase(
+            "Concurrent Requests Test",
+            "Test API performance under concurrent requests",
+            "Send multiple concurrent requests to the API",
+            "API should maintain response time under concurrent load"
+        ));
+        
+        // Data volume test
+        performanceTests.add(createApiPerformanceTestCase(
+            "Data Volume Test",
+            "Test API performance with large data volumes",
+            "Send requests with large data payloads and retrieve large responses",
+            "API should handle large data volumes efficiently"
+        ));
+        
+        // Long-running request test
+        performanceTests.add(createApiPerformanceTestCase(
+            "Long-Running Request Test",
+            "Test API performance for long-running operations",
+            "Initiate long-running operations and measure performance",
+            "API should efficiently handle long-running operations"
+        ));
+        
+        return performanceTests;
+    }
+    
+    private TestCase createPerformanceTestCase(String name, String description, String stepDescription, String expectedResult) {
+        List<TestStep> steps = new ArrayList<>();
+        steps.add(new TestStep(stepDescription, expectedResult));
+        
+        return new TestCase(
+            name,
+            description,
+            steps,
+            TestType.PERFORMANCE
+        );
+    }
+    
+    private TestCase createApiPerformanceTestCase(String name, String description, String stepDescription, String expectedResult) {
+        List<TestStep> steps = new ArrayList<>();
+        steps.add(new TestStep(stepDescription, expectedResult));
+        
+        return new TestCase(
+            name,
+            description,
+            steps,
+            TestType.PERFORMANCE
+        );
+    }
 }
